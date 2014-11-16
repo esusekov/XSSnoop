@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html ng-app="popup">
+<head>
+    <meta charset="UTF-8">
+    <script src="/vendors/angular/angular.min.js"></script>
+    <script src="/js/popup.js"></script>
+    <link href="css/popup.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div ng-controller="PopupController">
+        <button class="scan-button" ng-click="startScan()" ng-if="!scanInProgress">Scan page</button>
+        <span class="loading" ng-if="scanInProgress && formsList.length === 0">{{loading}}</span>
+        <ul ng-if="formsList.length > 0">
+            <li ng-repeat="formString in formsList track by $index">
+                {{formString}}
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

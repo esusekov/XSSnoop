@@ -1,0 +1,49 @@
+{
+    "name": "XSSnoop",
+    "version": "0.1.0",
+    "manifest_version": 2,
+    "description": "XSSnoop",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "background": {
+        "page": "background.html"
+    },
+
+    "browser_action": {
+        "default_icon": {
+            "19": "img/mag24.png"
+        },
+        "default_title": "XSSnoop",
+        "default_popup": "popup.html"
+    },
+
+    "icons": {
+        "128": "img/mag128.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "run_at": "document_end",
+            "css": ["css/content-script.css"],
+            "js": [
+                "vendors/zepto/zepto.min.js",
+                "js/content-script.js"
+            ]
+        }
+    ],
+    "web_accessible_resources": [
+        "img/*.png",
+        "*.html",
+        "js/*.js",
+        "vendors/*"
+    ],
+    "permissions": [
+        "tabs",
+        "contextMenus",
+        "downloads",
+        "pageCapture",
+        "storage",
+        "<all_urls>",
+        "*://*.mail.ru/*"
+    ],
+    "options_page": "options.html"
+}
