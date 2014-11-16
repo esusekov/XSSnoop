@@ -1,4 +1,8 @@
 angular.module('popup', [])
+    .config(['$compileProvider', function( $compileProvider ) {
+        $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
+        $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):/);
+    }])
     .controller('PopupController', function($scope, $interval) {
 
         function messageHandler(message) {
@@ -27,7 +31,7 @@ angular.module('popup', [])
                 if (backgroundFormsList.length > 0) {
                     $scope.formsList = backgroundFormsList;
                 }
-                $interval.cancel(checkInterval);
+                //$interval.cancel(checkInterval);
             }, 1000);
         }
 
@@ -35,6 +39,17 @@ angular.module('popup', [])
         var chrExtension = chrome.extension;
         var port = chrRuntime.connect();
         var loopInterval;
+
+        var imgUrls = {
+            inprogress: chrExtension.getURL('img/load.gif'),
+            vulnerable: chrExtension.getURL('img/done.png'),
+            safe: chrExtension.getURL('img/done.png'),
+        };
+
+        $scope.getImgUrl = function(status) {
+            console.log(imgUrls.inprogress);
+            return imgUrls[status];
+        };
 
         chrRuntime.onConnect.addListener(function (port) {
             port.onMessage.addListener(messageHandler);

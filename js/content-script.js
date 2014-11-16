@@ -14,7 +14,8 @@
                 input.value = imgString;
             }
         }
-        form.dispatchEvent(new Event('submit'));
+        //form.dispatchEvent(new Event('submit')); //для стенда
+        form.submit(); //в бою)
     }
 
     function sendMessage(message) {
@@ -32,8 +33,20 @@
             action: 'saveForms',
             data: {
                 formsCount: document.forms.length,
-                formsList: formsStrings,
+                formsStrings: formsStrings,
                 pageUrl: location.href
+            }
+        });
+    }
+
+    function checkVulnerability() {
+        var status = location.hash === '#EVIL' ? 'vulnerable' : 'safe';
+        sendMessage({
+            sender: 'content-script',
+            recipient: 'background',
+            action: 'formReport',
+            data: {
+                status: status
             }
         });
     }
@@ -51,6 +64,13 @@
                     fillForm(message.data.formIndex);
                     break;
 
+                case 'checkVulnerability':
+                    checkVulnerability();
+                    break;
+
+                case 'refreshPage':
+                    window.open(message.data.pageUrl, '_self');
+                    break;
             }
         }
 
@@ -61,12 +81,18 @@
     var scanner = new Scanner();
     var port = chrRuntime.connect();
 
-    var xssString = 'ZZZ <script>window.evil=true;console.error(\'YOU ARE HACKED\');</script>';
-    var imgString = '<img src="empty.gif" onerror="window.evil=true;console.error(\'YOU ARE HACKED\');" />';
-    var buttonString = '<button onclick="window.evil=true;console.error(\'YOU ARE HACKED\');">EVIL</button>';
+    var xssString = 'ZZZ <script>location.hash=\'EVIL\';console.error(\'YOU ARE HACKED\');</script>';
+    var imgString = '<img src="empty.gif" onerror="location.hash=\'EVIL\';console.error(\'YOU ARE HACKED\');" />';
+    var buttonString = '<button onclick="location.hash=\'EVIL\';console.error(\'YOU ARE HACKED\');">EVIL</button>';
 
     chrRuntime.onConnect.addListener(function (port) {
         port.onMessage.addListener(messageHandler);
+    });
+
+    sendMessage({
+        sender: 'content-script',
+        recipient: 'background',
+        action: 'pageLoaded'
     });
 
 })(Zepto);

@@ -40,11 +40,13 @@ function routeToTest() {
         return;
     }
     var routedIndex;
-    Array.prototype.some.call(tests, function(test, index) {
+    var flag = Array.prototype.some.call(tests, function(test, index) {
         routedIndex = index;
         return '#'+test.id === location.hash;
     });
-    makeTestActive(routedIndex);
+    if (flag) {
+        makeTestActive(routedIndex);
+    }
 }
 
 Array.prototype.forEach.call(tests, function(test) {
@@ -75,6 +77,10 @@ function Card(title, content) {
     this.content = content;
 }
 
+function safe_tags(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') ;
+}
+
 Card.prototype = {
     render: function(parentNode) {
         var node =
@@ -84,18 +90,41 @@ Card.prototype = {
             '</div>';
         console.log(node);
         parentNode.innerHTML += node;
+    },
+    escape: function() {
+        this.title = safe_tags(this.title);
+        this.content = safe_tags(this.content);
     }
 };
 
-document.querySelector('.basic-form').onsubmit=createBasicCard;
+var basicForms = document.querySelectorAll('.basic-form');
+basicForms[0].onsubmit = createBasicCard;
+basicForms[1].onsubmit = createBasicCardWithEscaping;
 
-function createBasicCard(event) {
+function createBasicCard(event, escaping) {
     event.preventDefault();
     var form = this;
 
     var elements = form.elements;
     var card = new Card(elements['title'].value, elements['content'].value);
 
+    if (escaping) {
+        card.escape();
+    }
+
+    card.render(results[0]);
+    form.reset();
+    return false;
+}
+
+function createBasicCardWithEscaping(event) {
+    event.preventDefault();
+    var form = this;
+
+    var elements = form.elements;
+    var card = new Card(elements['title'].value, elements['content'].value);
+
+    card.escape();
     card.render(results[0]);
     form.reset();
     return false;
