@@ -8,7 +8,7 @@
 </head>
 <body>
     <div ng-controller="PopupController">
-        <button class="scan-button" ng-click="startScan()" ng-if="!scanInProgress">Scan page</button>
+        <button class="scan-button" ng-click="startScan()" ng-if="!scanInProgress">SCAN PAGE</button>
         <span class="loading" ng-if="scanInProgress && formsList.length === 0">{{loading}}</span>
         <ul ng-if="formsList.length > 0" class="forms-container">
             <li ng-repeat="formData in formsList track by $index" class="form-item"
@@ -16,6 +16,7 @@
                 <span class="form-string" ng-bind="formData.formString"></span>
                 <img class="form-image" ng-if="formData.status!='waiting'" ng-src="{{getImgUrl(formData.status)}}">
             </li>
+            <button class="stop-button" ng-click="cancel()">Stop</button>
         </ul>
     </div>
 </body>

@@ -41,6 +41,8 @@ function logReport() {
 }
 
 function fillFormWithXSS(formIndex, xssIndex) {
+    xssInProgress = true;
+
     sendMessage({
         sender: 'background',
         recipient: 'content-script',
@@ -64,21 +66,26 @@ function fillFormWithXSS(formIndex, xssIndex) {
     }, 3000);
 }
 
+function cancelScan() {
+    formsCount = 0;
+    formsList = [];
+    formCounter = 0;
+    xssCounter = 0;
+    testingUrl = '';
+    finish = 0;
+    xssInProgress = false;
+    clearTimeout(checkVulTimeout);
+}
+
 function messageHandler(message) {
     console.log(message);
     console.log('in message handler', formCounter, finish);
-    if (message.recipient === 'content-script') {
-        if (message.action === 'scanPage') {
-            formsCount = 0;
-            formsList = [];
-            formCounter = 0;
-            xssCounter = 0;
-            testingUrl = '';
-            finish = 0;
-            clearTimeout(checkVulTimeout);
-        }
-        sendMessage(message);
-    }
+    //if (message.recipient === 'content-script') {
+    //    if (message.action === 'scanPage') {
+    //        cancelScan();
+    //    }
+    //    sendMessage(message);
+    //}
 
     if (message.recipient === 'background') {
 
@@ -94,6 +101,7 @@ function messageHandler(message) {
             case 'xssReport':
                 formsList[formCounter].reports.push(message.data.report);
                 xssCounter++;
+                xssInProgress = false;
                 sendMessage({
                     sender: 'background',
                     recipient: 'content-script',
@@ -110,6 +118,7 @@ function messageHandler(message) {
                 formsList[formCounter].status = getFormStatus(formCounter);
                 formCounter++;
                 xssCounter = 0;
+                xssInProgress = false;
                 if (formCounter !== finish) {
                     sendMessage({
                         sender: 'background',
@@ -128,10 +137,14 @@ function messageHandler(message) {
 
             case 'pageLoaded':
                 console.log('in page loaded', formCounter, xssCounter, finish);
-                if (formCounter !== 0 || xssCounter !== 0) { //TODO - то что внутри не должно срабатывать, если событие page loaded произошло после сабмита xss, кроме случая, когда это последний xss
+                if ((formCounter !== 0 || xssCounter !== 0) && !xssInProgress) {
                     formsList[formCounter].status = formStatuses.INPROGRESS;
                     fillFormWithXSS(formCounter, xssCounter);
                 }
+                break;
+
+            case 'cancelScan':
+                cancelScan();
                 break;
         }
 
@@ -157,6 +170,7 @@ var xssCounter = 0;
 var testingUrl;
 var finish;
 var checkVulTimeout;
+var xssInProgress=false;
 
 chrRuntime.onConnect.addListener(function (port) {
     port.onMessage.addListener(messageHandler);

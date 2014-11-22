@@ -26,12 +26,12 @@ angular.module('popup', [])
         }
 
         function checkFormsList() {
-            var checkInterval = $interval(function () {
+            $scope.checkInterval = $interval(function () {
                 var backgroundFormsList = chrExtension.getBackgroundPage().formsList.slice();
                 if (backgroundFormsList.length > 0) {
                     $scope.formsList = backgroundFormsList;
                 }
-                //$interval.cancel(checkInterval);
+
             }, 1000);
         }
 
@@ -75,6 +75,13 @@ angular.module('popup', [])
             $scope.scanInProgress = true;
             startLoadingLoop();
             checkFormsList();
+        };
+
+        $scope.cancel = function() {
+            $interval.cancel($scope.checkInterval);
+            $scope.formsList = [];
+            $scope.scanInProgress = false;
+            chrExtension.getBackgroundPage().cancelScan();
         };
 
         init();
