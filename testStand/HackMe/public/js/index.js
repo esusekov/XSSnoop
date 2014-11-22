@@ -101,16 +101,12 @@ var basicForms = document.querySelectorAll('.basic-form');
 basicForms[0].onsubmit = createBasicCard;
 basicForms[1].onsubmit = createBasicCardWithEscaping;
 
-function createBasicCard(event, escaping) {
+function createBasicCard(event) {
     event.preventDefault();
     var form = this;
 
     var elements = form.elements;
     var card = new Card(elements['title'].value, elements['content'].value);
-
-    if (escaping) {
-        card.escape();
-    }
 
     card.render(results[0]);
     form.reset();

@@ -1,5 +1,5 @@
 .body {
-    width: 200px;
+    width: 400px;
     height: 100px;
     text-align: center;
 }
@@ -17,7 +17,7 @@
 }
 
 .forms-container {
-    width: 300px;
+    width: 400px;
     list-style-type: none;
     padding: 0;
     margin: 0;
