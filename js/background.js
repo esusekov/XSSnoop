@@ -43,15 +43,13 @@ function getFormStatus(formIndex) {
 
 function logReport() {
     var result = {};
-    console.log('in log report');
     formsList.forEach(function(formData, index) {
         var form = result[formData.formString + index] = {};
         formData.reports.forEach(function(report) {
             form[report.xssString] = report.vulnerable;
         });
     });
-
-    console.log( formsList, result);
+    //отчет
     console.table(result);
 }
 
@@ -84,25 +82,18 @@ function fillFormWithXSS(formIndex, xssIndex) {
 }
 
 function cancelScan() {
+    clearTimeout(checkVulTimeout);
     formsCount = 0;
-    formsList = [];
     formCounter = 0;
     xssCounter = 0;
     testingUrl = '';
     finish = 0;
     xssInProgress = false;
-    clearTimeout(checkVulTimeout);
+    logReport();
+    formsList = [];
 }
 
 function messageHandler(message) {
-    console.log(message);
-    console.log('in message handler', formCounter, finish);
-    //if (message.recipient === 'content-script') {
-    //    if (message.action === 'scanPage') {
-    //        cancelScan();
-    //    }
-    //    sendMessage(message);
-    //}
 
     if (message.recipient === 'background') {
 
@@ -130,7 +121,6 @@ function messageHandler(message) {
                 break;
 
             case 'lastXssReport':
-                console.log('in last xss report', formCounter, finish);
                 formsList[formCounter].reports.push(message.data.report);
                 formsList[formCounter].status = getFormStatus(formCounter);
                 formCounter++;
@@ -153,7 +143,6 @@ function messageHandler(message) {
                 break;
 
             case 'pageLoaded':
-                console.log('in page loaded', formCounter, xssCounter, finish);
                 if ((formCounter !== 0 || xssCounter !== 0) && !xssInProgress) {
                     formsList[formCounter].status = formStatuses.INPROGRESS;
                     fillFormWithXSS(formCounter, xssCounter);
@@ -281,7 +270,6 @@ chrStorage.local.get('xssArray', function(items) {
 
 chrStorage.onChanged.addListener(function(changes) {
     xssArray = getActiveItems(changes.xssArray.newValue);
-    console.log(xssArray);
 });
 
 chrRuntime.onConnect.addListener(function (port) {

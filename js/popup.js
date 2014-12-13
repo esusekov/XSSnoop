@@ -6,7 +6,6 @@ angular.module('popup', [])
     .controller('PopupController', function($scope, $interval) {
 
         function messageHandler(message) {
-            console.log(message);
 
             if (message.recipient === 'popup') {
                 if (message.action === 'setFormsList') {
@@ -55,7 +54,6 @@ angular.module('popup', [])
         };
 
         $scope.getImgUrl = function(status) {
-            console.log(imgUrls.inprogress);
             return imgUrls[status];
         };
 

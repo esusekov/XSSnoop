@@ -1,7 +1,3 @@
-function Scanner() {
-
-    }
-
 function fillForm(formIndex, xssIndex) {
     var form = document.forms[formIndex];
     var inputs = form.elements;
@@ -74,7 +70,6 @@ function scanPage() {
 
 function checkVulnerability(xssIndex) {
     var status = !!eval(xssArray[xssIndex].result);
-    console.log(status);
     if (xssIndex !== xssArray.length - 1) {
         sendMessage({
             sender: 'content-script',
@@ -104,7 +99,6 @@ function checkVulnerability(xssIndex) {
 }
 
 function messageHandler(message) {
-    console.log(message);
     if (message.recipient === "content-script") {
 
         switch (message.action) {
@@ -132,7 +126,6 @@ function messageHandler(message) {
 
 var chrRuntime = chrome.runtime;
 
-var scanner = new Scanner();
 var port = chrRuntime.connect();
 
 var xssArray;
@@ -142,14 +135,11 @@ chrRuntime.onConnect.addListener(function (port) {
     port.onMessage.addListener(messageHandler);
 });
 
-
-//document.addEventListener("DOMContentLoaded", function(event) {
-    sendMessage({
-        sender: 'content-script',
-        recipient: 'background',
-        action: 'pageLoaded'
-    });
-//});
+sendMessage({
+    sender: 'content-script',
+    recipient: 'background',
+    action: 'pageLoaded'
+});
 
 
 
