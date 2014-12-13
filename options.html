@@ -1,10 +1,30 @@
 <!DOCTYPE html>
-<html>
-<head lang="en">
+<html ng-app="options">
+<head>
     <meta charset="UTF-8">
+    <script src="/vendors/angular/angular.min.js"></script>
+    <script src="/js/options.js"></script>
+    <link href="css/options.css" rel="stylesheet" type="text/css">
     <title>XSSnoop options</title>
 </head>
 <body>
-
+    <div class="content" ng-controller="OptionsController">
+        <ul class="xss-list">
+            <li class="xss-item" ng-repeat="xss in xssArray">
+                <input type="checkbox" ng-model="xss.active">
+                <span class="xss-text">{{::xss.xssString}}</span>
+            </li>
+            <button ng-click="saveChanges()" class="save-button">Save changes</button>
+        </ul>
+        <div class="add-xss-block">
+            <button ng-click="addingModeSwitch()" ng-if="!addingMode">AddXss</button>
+            <form name="addingForm" ng-submit="addXss($event, $form)" ng-if="addingMode">
+                Your xssString: <input name="xssString" type="text" ng-model="newXss.xssString" required><br>
+                Expected result: <input name="result" type="text" ng-model="newXss.result" required><br>
+                <input type="submit" value="Add">
+                <button ng-click="addingModeSwitch()">Cancel</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,0 +1,39 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600);
+
+body {
+}
+
+.content {
+    width: 600px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.xss-list {
+    width: 100%;
+    list-style-type: none;
+    padding: 10px;
+}
+
+.xss-item {
+    width: 100%;
+    height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.xss-text {
+    width: 100%;
+    line-height: 20px;
+}
+
+.save-button {
+    margin-left: 3px;
+}
+
+.add-xss-block {
+    padding: 10px;
+}
